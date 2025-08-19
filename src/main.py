@@ -8,6 +8,7 @@ This module defines:
     - "/"       : Root endpoint returning a simple greeting.
     - "/metrics": Exposes Prometheus metrics for monitoring.
 """
+
 from fastapi import FastAPI
 from fastapi.requests import Request
 from fastapi.responses import PlainTextResponse, Response

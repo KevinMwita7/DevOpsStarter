@@ -7,6 +7,7 @@ This module tests the following endpoints:
 
 Tests are designed to validate basic functionality and response correctness.
 """
+
 from fastapi.testclient import TestClient
 
 from src.main import app
