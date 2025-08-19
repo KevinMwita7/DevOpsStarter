@@ -22,6 +22,10 @@ docs.zip
 archive.zip
 bin
 lib
+lib64
+.flakeheaven_cache
+.pytest_cache
+share
 
 # vim temporary files
 *~

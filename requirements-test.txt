@@ -1,0 +1,3 @@
+pytest==8.4.1
+curio==1.6
+coverage==7.10.4

@@ -56,6 +56,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+tests/
 
 # Translations
 *.mo
@@ -87,3 +88,10 @@ venv/
 
 # VS Code
 .vscode/
+
+# Caches
+.flakeheaven_cache
+.pytest_cache
+
+# Bandit
+share
