@@ -1,0 +1,62 @@
+[tool.black]
+line-length = 120
+target-version = ['py37']
+exclude = '''
+/(
+    \.git
+  | \.github
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.idea
+  | venv
+  | venv_linter
+  | venv_tests
+  | \.local
+  | makefile\.inc
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = 'black'
+line_length = 120
+skip_glob = [
+    ".history",
+    "venv",
+    "venv_linter",
+    "venv_tests",
+]
+use_parentheses = true
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.flakeheaven]
+exclude = [
+    ".history",
+    "venv",
+    "venv_linter",
+    "venv_tests",
+]
+format = "grouped"
+max_line_length = 120
+show_source = true
+extended_default_ignore = []
+
+[tool.flakeheaven.plugins]
+# default plugins
+pyflakes = ["+*"]
+pycodestyle = ["+*"]
+# additional plugins
+flake8 = ["+*"]
+# enable everything that starts from `flake8-`
+"flake8-*" = ["+*"]
+pylint = [
+    "+*", # include everything
+    "-E0401", # disable Unable to import 'library' (import-error)
+]
+
+[tool.bandit]
+skips= ["B101"]
+exclude_dirs= ["lib", "lib64"]
+targets= ["src/*"]
