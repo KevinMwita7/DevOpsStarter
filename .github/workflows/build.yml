@@ -110,7 +110,7 @@ jobs:
         exit-code: 1
       env:
         TRIVY_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-        TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+        TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_SECRET }}
     - name: Upload SBOM as artifact
       uses: actions/upload-artifact@v4
       with:
