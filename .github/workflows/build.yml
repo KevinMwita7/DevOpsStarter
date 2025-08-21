@@ -97,13 +97,17 @@ jobs:
         provenance: mode=max
         tags: ${{ steps.meta.outputs.tags }}
     # Alternatively, you could set the sbom option to true in the 'Build and push image' job directly above, instead of using trivy
-    - name: Run Trivy scan and generate SBOM and SARIF
-      run: |
-        mkdir -p reports
-        # Generate SBOM
-        trivy image --format cyclonedx --output reports/sbom.json --ignore-unfixed --vuln-type os,library --severity HIGH,CRITICAL ${{ steps.meta.outputs.tags }}
-        # Generate SARIF
-        trivy image --format sarif --output reports/trivy-results.sarif --ignore-unfixed --vuln-type os,library --severity HIGH,CRITICAL ${{ steps.meta.outputs.tags }}
+    - name: Run Trivy scan and generate SBOM
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ${{ steps.meta.outputs.tags }}
+        scan-type: image
+        format: cyclonedx
+        output: reports/sbom.json
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'HIGH,CRITICAL'
+        exit-code: 1
       env:
         TRIVY_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
         TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_SECRET }}
@@ -113,6 +117,20 @@ jobs:
         name: trivy-sbom
         path: reports/sbom.json
         retention-days: 20
+    - name: Run Trivy scan and generate SARIF
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: ${{ steps.meta.outputs.tags }}
+        scan-type: image
+        format: sarif
+        output: reports/trivy-results.sarif
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'HIGH,CRITICAL'
+        exit-code: 1
+      env:
+        TRIVY_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+        TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_SECRET }}
     - name: Upload Trivy SARIF to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
       with:
