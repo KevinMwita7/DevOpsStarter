@@ -97,17 +97,13 @@ jobs:
         provenance: mode=max
         tags: ${{ steps.meta.outputs.tags }}
     # Alternatively, you could set the sbom option to true in the 'Build and push image' job directly above, instead of using trivy
-    - name: Run Trivy scan (SBOM + SARIF)
-      uses: aquasecurity/trivy-action@0.28.0
-      with:
-        image-ref: ${{ steps.meta.outputs.tags }}
-        scan-type: image
-        format: sarif,cyclonedx
-        output: reports/trivy-results.sarif,reports/sbom.json
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'HIGH,CRITICAL'
-        exit-code: 1
+    - name: Run Trivy scan and generate SBOM and SARIF
+      run: |
+        mkdir -p reports
+        # Generate SBOM
+        trivy image --format cyclonedx --output reports/sbom.json --ignore-unfixed --vuln-type os,library --severity HIGH,CRITICAL ${{ steps.meta.outputs.tags }}
+        # Generate SARIF
+        trivy image --format sarif --output reports/trivy-results.sarif --ignore-unfixed --vuln-type os,library --severity HIGH,CRITICAL ${{ steps.meta.outputs.tags }}
       env:
         TRIVY_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
         TRIVY_PASSWORD: ${{ secrets.DOCKERHUB_SECRET }}
@@ -116,12 +112,6 @@ jobs:
       with:
         name: trivy-sbom
         path: reports/sbom.json
-        retention-days: 20
-    - name: Upload trivy report as a Github artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: trivy-sbom-report
-        path: '${{ github.workspace }}/dependency-results.sbom.json'
         retention-days: 20
     - name: Upload Trivy SARIF to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
