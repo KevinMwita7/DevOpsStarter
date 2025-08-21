@@ -103,7 +103,7 @@ jobs:
         image-ref: ${{ steps.meta.outputs.tags }}
         scan-type: image
         format: cyclonedx
-        output: reports/sbom.json
+        output: trivy-sbom.json
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'HIGH,CRITICAL'
@@ -115,7 +115,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: trivy-sbom
-        path: reports/sbom.json
+        path: trivy-sbom.json
         retention-days: 20
     - name: Run Trivy scan and generate SARIF
       uses: aquasecurity/trivy-action@0.28.0
@@ -123,7 +123,7 @@ jobs:
         image-ref: ${{ steps.meta.outputs.tags }}
         scan-type: image
         format: sarif
-        output: reports/trivy-results.sarif
+        output: trivy-results.sarif
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'HIGH,CRITICAL'
@@ -134,4 +134,4 @@ jobs:
     - name: Upload Trivy SARIF to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: reports/trivy-results.sarif
+        sarif_file: trivy-results.sarif
