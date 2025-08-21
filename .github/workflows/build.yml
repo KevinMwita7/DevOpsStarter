@@ -73,6 +73,7 @@ jobs:
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    # No need for checkout. Buildx will do this
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     # Setting the call option to check makes the  workflow fail if any check warnings are detected in the build's configuration.
