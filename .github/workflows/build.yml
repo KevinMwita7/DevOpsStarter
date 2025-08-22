@@ -85,7 +85,7 @@ jobs:
         call: check
     - name: Generate short SHA for tagging
       id: docker_tag
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
     # provenance mode=max enables the highest level of provenance metadata in the container image. The default is mode=min
     # for private repos. Max mode includes the values of build arguments in the metadata, so avoid using build args to pass secrets.
     # Pass sensitive build args using secret mounts (https://docs.docker.com/build/ci/github-actions/secrets/#secret-mounts)
