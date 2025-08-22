@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: kevinmwita7/helloworld:${{ github.sha }}
+  IMAGE_NAME: kevinmwita7/helloworld
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
 
 jobs:
@@ -83,6 +83,9 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         call: check
+    - name: Generate short SHA for tagging
+      id: docker_tag
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     # provenance mode=max enables the highest level of provenance metadata in the container image. The default is mode=min
     # for private repos. Max mode includes the values of build arguments in the metadata, so avoid using build args to pass secrets.
     # Pass sensitive build args using secret mounts (https://docs.docker.com/build/ci/github-actions/secrets/#secret-mounts)
@@ -91,12 +94,12 @@ jobs:
       with:
         push: true
         provenance: mode=max
-        tags: ${{ env.IMAGE_NAME }}
+        tags: ${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.sha_short }}
     # Alternatively, you could set the sbom option to true in the 'Build and push image' job directly above, instead of using trivy
     - name: Run Trivy scan and generate SBOM
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: docker.io/${{ env.IMAGE_NAME }}
+        image-ref: docker.io/${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.sha_short }}
         scan-type: image
         format: cyclonedx
         output: trivy-sbom.json
@@ -116,7 +119,7 @@ jobs:
     - name: Run Trivy scan and generate SARIF
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: docker.io/${{ env.IMAGE_NAME }}
+        image-ref: docker.io/${{ env.IMAGE_NAME }}:${{ steps.docker_tag.outputs.sha_short }}
         format: 'template'
         template: '@/contrib/sarif.tpl'
         output: trivy-results.sarif
