@@ -23,8 +23,8 @@ on:
           - 'qa'
 env:
   IMAGE_NAME: kevinmwita7/helloworld
-  SHA_TAG: kevinmwita7/helloworld:${{ github.event.inputs.sha_tag }}
-  RELEASE_TAG: kevinmwita7/helloworld:${{ github.event.inputs.release_tag }}
+  SHA_TAG: ${{ github.event.inputs.sha_tag }}
+  RELEASE_TAG: ${{ github.event.inputs.release_tag }}
 
 
 jobs:
@@ -44,16 +44,16 @@ jobs:
           
       - name: Pull and re-tag Docker image
         run: |
-          docker pull ${{ env.SHA_TAG }}
-          docker tag ${{ env.SHA_TAG }} ${{ env.RELEASE_TAG }}
+          docker pull ${{ env.IMAGE_NAME }}:${{ env.SHA_TAG }}
+          docker tag ${{ env.IMAGE_NAME }}:${{ env.SHA_TAG }} ${{ env.IMAGE_NAME }}:${{ env.RELEASE_TAG }}
 
       - name: Push the new release tag
-        run: docker push ${{ env.RELEASE_TAG }}
+        run: docker push ${{ env.IMAGE_NAME }}:${{ env.RELEASE_TAG }}
 
       - name: Deploy to production
         if: github.event.inputs.environment == 'production'
         run: |
-          echo "Deploying ${{ env.RELEASE_TAG }} to production..."
+          echo "Deploying ${{ env.IMAGE_NAME }}:${{ env.RELEASE_TAG }} to production..."
           # Add your production deployment logic here.
           # This could be a call to a deployment tool like Terraform.
       
