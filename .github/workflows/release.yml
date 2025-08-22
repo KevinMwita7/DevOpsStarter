@@ -66,7 +66,7 @@ jobs:
             -X POST -d '{"username": "'"${{ vars.DOCKERHUB_USERNAME }}"'", "password": "'"${{ secrets.DOCKERHUB_SECRET }}"'"}' \
             https://hub.docker.com/v2/users/login/ | jq -r .token)
 
-          echo "$TOKEN"
+          echo $TOKEN
 
           curl -s -X DELETE \
             -H "Authorization: JWT $TOKEN" \
