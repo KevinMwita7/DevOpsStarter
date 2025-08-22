@@ -57,6 +57,7 @@ jobs:
           # Add your production deployment logic here.
           # This could be a call to a deployment tool like Terraform.
       
+      # The DockerHub secret needs to have the delete permission for this to work
       - name: Delete old image with SHA tag
         if: github.event.inputs.environment == 'production'
         run: |
