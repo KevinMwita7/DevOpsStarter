@@ -56,3 +56,16 @@ jobs:
           echo "Deploying ${{ env.RELEASE_TAG }} to production..."
           # Add your production deployment logic here.
           # This could be a call to a deployment tool like Terraform.
+      
+      - name: Delete old image with SHA tag
+        if: github.event.inputs.environment == 'production'
+        run: |
+          echo "Deleting ${{ env.IMAGE_NAME }}:${{ env.SHA_TAG }} from Docker Hub..."
+
+          TOKEN=$(curl -s -H "Content-Type: application/json" \
+            -X POST -d '{"username": "'"${{ vars.DOCKERHUB_USERNAME }}"'", "password": "'"${{ vars.DOCKERHUB_SECRET }}"'"}' \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
+          curl -s -X DELETE \
+            -H "Authorization: JWT $TOKEN" \
+            "https://hub.docker.com/v2/repositories/${{ env.IMAGE_NAME }}/tags/${{ env.SHA_TAG }}/"
